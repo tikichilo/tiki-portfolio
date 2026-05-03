@@ -5,7 +5,6 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;family=Space+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
       tailwind.config = {
@@ -107,6 +106,26 @@
             background-color: #000000;
             color: #e2e2eb;
         }
+
+        /* Mobile menu transition */
+        #mobile-menu {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease, opacity 0.3s ease;
+          opacity: 0;
+        }
+        #mobile-menu.open {
+          max-height: 300px;
+          opacity: 1;
+        }
+
+        /* Hamburger icon rotation on open */
+        #hamburger-btn[aria-expanded="true"] #hamburger-icon {
+          transform: rotate(90deg);
+        }
+        #hamburger-icon {
+          transition: transform 0.2s ease;
+        }
     </style>
 <style>
     body {
@@ -115,24 +134,74 @@
   </style>
   </head>
 <body class="bg-black text-on-surface font-body-md overflow-x-hidden">
+
 <!-- TopAppBar -->
 <header class="bg-black/80 backdrop-blur-md dark:bg-black/90 fixed top-0 w-full z-50 border-b border-zinc-800 dark:border-zinc-800">
-<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
-<div class="flex items-center gap-4">
-<span class="material-symbols-outlined text-blue-700 dark:text-blue-500" data-icon="terminal">terminal</span>
-<span class="text-xl font-black text-white dark:text-white tracking-tighter uppercase font-['Inter']">TIKI CHILOMO</span>
-</div>
-<nav class="hidden md:flex items-center gap-8">
-<a class="text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 font-['Inter'] tracking-tight" href="index.html">Home</a>
-<a class="text-zinc-400 dark:text-zinc-500 hover:text-white transition-colors duration-200 font-['Inter'] tracking-tight" href="projects.html">Projects</a>
-<a class="text-zinc-400 dark:text-zinc-500 hover:text-white transition-colors duration-200 font-['Inter'] tracking-tight" href="experience.html">Experience</a>
-<a class="text-zinc-400 dark:text-zinc-500 hover:text-white transition-colors duration-200 font-['Inter'] tracking-tight" href="contact.html">Contact</a>
-</nav>
-<button class="md:hidden text-zinc-400">
-<span class="material-symbols-outlined" data-icon="menu">menu</span>
-</button>
-</div>
+  <div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-blue-700 dark:text-blue-500" data-icon="terminal">terminal</span>
+      <span class="text-xl font-black text-white dark:text-white tracking-tighter uppercase font-['Inter']">TIKI CHILOMO</span>
+    </div>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 font-['Inter'] tracking-tight" href="index.html">Home</a>
+      <a class="text-zinc-400 dark:text-zinc-500 hover:text-white transition-colors duration-200 font-['Inter'] tracking-tight" href="projects.html">Projects</a>
+      <a class="text-zinc-400 dark:text-zinc-500 hover:text-white transition-colors duration-200 font-['Inter'] tracking-tight" href="experience.html">Experience</a>
+      <a class="text-zinc-400 dark:text-zinc-500 hover:text-white transition-colors duration-200 font-['Inter'] tracking-tight" href="contact.html">Contact</a>
+    </nav>
+
+    <!-- Hamburger button (mobile only) -->
+    <button
+      id="hamburger-btn"
+      class="md:hidden p-2 hover:bg-zinc-900/50 transition-colors duration-200 rounded text-zinc-400"
+      aria-expanded="false"
+      aria-label="Toggle menu"
+      onclick="toggleMenu()"
+    >
+      <span id="hamburger-icon" class="material-symbols-outlined" data-icon="menu">menu</span>
+    </button>
+  </div>
+
+  <!-- Mobile dropdown menu -->
+  <div id="mobile-menu" class="md:hidden border-t border-zinc-800 bg-black/95 backdrop-blur-md">
+    <nav class="flex flex-col px-6 py-2">
+      <a class="text-blue-400 font-bold font-['Inter'] tracking-tight py-4 border-b border-zinc-800/60" href="index.html">Home</a>
+      <a class="text-zinc-400 hover:text-white transition-colors duration-200 font-['Inter'] font-semibold tracking-tight py-4 border-b border-zinc-800/60" href="projects.html">Projects</a>
+      <a class="text-zinc-400 hover:text-white transition-colors duration-200 font-['Inter'] font-semibold tracking-tight py-4 border-b border-zinc-800/60" href="experience.html">Experience</a>
+      <a class="text-zinc-400 hover:text-white transition-colors duration-200 font-['Inter'] font-semibold tracking-tight py-4" href="contact.html">Contact</a>
+    </nav>
+  </div>
 </header>
+
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('hamburger-btn');
+    const icon = document.getElementById('hamburger-icon');
+    const isOpen = menu.classList.contains('open');
+
+    if (isOpen) {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      icon.textContent = 'menu';
+    } else {
+      menu.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      icon.textContent = 'close';
+    }
+  }
+
+  // Close menu when a link is clicked
+  document.querySelectorAll('#mobile-menu a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.getElementById('hamburger-btn').setAttribute('aria-expanded', 'false');
+      document.getElementById('hamburger-icon').textContent = 'menu';
+    });
+  });
+</script>
+
 <main class="pt-24 min-h-screen">
 <!-- Hero Section -->
 <section class="max-w-7xl mx-auto px-6 py-stack-xl lg:py-32 grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
@@ -149,12 +218,11 @@
                     Dedicated and highly motivated Computer Science graduate with a solid foundation in software development and network administration. I specialize in building scalable web applications and maintaining high-performance IT infrastructure with a focus on technical precision and structural integrity.
                 </p>
 <div class="flex flex-wrap gap-4 pt-stack-md">
-  <!-- "View My Work" links to projects.html -->
   <a href="projects.html" class="bg-primary-container text-white px-8 py-4 font-label-caps text-label-caps uppercase tracking-widest border border-transparent hover:border-white transition-all active:scale-95 inline-block text-center">
     View My Work
   </a>
-  <!-- "Download CV" links to your CV file -->
-  <a href="Tiki_Chilomo.pdf" download class="border border-zinc-700 text-white px-8 py-4 font-label-caps text-label-caps uppercase tracking-widest hover:bg-zinc-900 transition-all active:scale-95 inline-block text-center">
+  <!-- CV download — make sure Tiki_Chilomo.pdf is in the same folder as this HTML file -->
+  <a href="tiki_chilomo.pdf" download="Tiki_Chilomo.pdf" class="border border-zinc-700 text-white px-8 py-4 font-label-caps text-label-caps uppercase tracking-widest hover:bg-zinc-900 transition-all active:scale-95 inline-block text-center">
     Download CV
   </a>
 </div>
@@ -177,7 +245,6 @@
 <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-primary-container opacity-20 blur group-hover:opacity-30 transition duration-1000"></div>
 <div class="relative bg-zinc-900 border border-zinc-800 p-2">
 <div class="bg-black aspect-square overflow-hidden flex items-center justify-center">
-  <!-- Updated to use your local image 1234.jpg -->
   <img alt="Tiki Chilomo" class="w-full h-full object-cover grayscale contrast-125 opacity-80" src="1234.jpg"/>
 </div>
 <!-- Terminal Decoration -->
@@ -228,7 +295,6 @@
 <section class="max-w-7xl mx-auto px-6 py-stack-xl">
 <div class="flex justify-between items-end mb-stack-lg">
 <h2 class="font-h2 text-h2 text-white">ENGINEERED PROJECTS</h2>
-<!-- "VIEW ALL" now links to projects.html -->
 <a class="font-label-caps text-blue-500 flex items-center gap-2 hover:underline" href="projects.html">VIEW ALL <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span></a>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
@@ -277,41 +343,10 @@
 </div>
 </div>
 </div>
+</div>
 </section>
 </main>
-<!-- NavigationDrawer (Mobile/Secondary) -->
-<div class="hidden">
-<aside class="fixed inset-y-0 left-0 z-[60] h-full w-80 border-r border-zinc-800 bg-zinc-900 dark:bg-black shadow-2xl flex flex-col">
-<div class="p-8 flex items-center gap-4 border-b border-zinc-800">
-<div class="w-12 h-12 bg-blue-600 flex items-center justify-center font-bold text-white">TC</div>
-<div>
-<h4 class="text-lg font-bold text-white font-['Inter']">Tiki Chilomo</h4>
-<p class="font-['Inter'] uppercase text-[10px] tracking-widest text-zinc-500">Web Developer &amp; IT Technician</p>
-</div>
-</div>
-<nav class="flex-1 py-8">
-<div class="bg-blue-900/20 text-blue-500 border-l-4 border-blue-600 px-6 py-4 flex items-center gap-4">
-<span class="material-symbols-outlined" data-icon="home">home</span>
-<span class="font-['Inter'] uppercase text-xs tracking-widest">Home</span>
-</div>
-<div class="text-zinc-400 hover:bg-zinc-800 px-6 py-4 flex items-center gap-4 cursor-pointer">
-<span class="material-symbols-outlined" data-icon="code">code</span>
-<span class="font-['Inter'] uppercase text-xs tracking-widest">Projects</span>
-</div>
-<div class="text-zinc-400 hover:bg-zinc-800 px-6 py-4 flex items-center gap-4 cursor-pointer">
-<span class="material-symbols-outlined" data-icon="work">work</span>
-<span class="font-['Inter'] uppercase text-xs tracking-widest">Experience</span>
-</div>
-<div class="text-zinc-400 hover:bg-zinc-800 px-6 py-4 flex items-center gap-4 cursor-pointer">
-<span class="material-symbols-outlined" data-icon="mail">mail</span>
-<span class="font-['Inter'] uppercase text-xs tracking-widest">Contact</span>
-</div>
-</nav>
-<div class="p-8 border-t border-zinc-800">
-<p class="font-['Inter'] uppercase text-[10px] tracking-widest text-zinc-600">CS Graduate</p>
-</div>
-</aside>
-</div>
+
 <!-- Footer -->
 <footer class="w-full py-12 border-t border-zinc-900 bg-black dark:bg-black">
 <div class="flex flex-col md:flex-row justify-between items-center px-8 w-full max-w-7xl mx-auto gap-8">
@@ -320,11 +355,11 @@
 <p class="font-code-md text-zinc-700 text-[10px]">LUSAKA // ZAMBIA // UTC+2</p>
 </div>
 <div class="flex gap-12">
-  <!-- Updated footer links -->
   <a class="font-['Inter'] text-[10px] uppercase tracking-[0.2em] text-zinc-600 hover:text-blue-500 transition-colors underline-offset-4 hover:underline" href="https://www.linkedin.com/in/tiki-chilomo" target="_blank" rel="noopener noreferrer">LinkedIn</a>
   <a class="font-['Inter'] text-[10px] uppercase tracking-[0.2em] text-zinc-600 hover:text-blue-500 transition-colors underline-offset-4 hover:underline" href="https://github.com/tikichilo" target="_blank" rel="noopener noreferrer">GitHub</a>
   <a class="font-['Inter'] text-[10px] uppercase tracking-[0.2em] text-zinc-600 hover:text-blue-500 transition-colors underline-offset-4 hover:underline" href="mailto:chilomotiki@gmail.com">Email</a>
 </div>
 </div>
 </footer>
+
 </body></html>
